@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  peopleservice:
+    image: peopleservice
+    build:
+      context: ./PeopleService
+      dockerfile: Dockerfile
