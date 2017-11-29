@@ -1,7 +1,19 @@
+#Set everything up
+FROM microsoft/aspnetcore-build:2.0 AS build-env
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+COPY entrypoint.sh .
+RUN dotnet restore
+
+#Just copy the whole folder..
+COPY . .
+RUN dotnet publish -c Release -o out
+
 FROM microsoft/aspnetcore:2.0
-ARG source
 WORKDIR /app
 EXPOSE 80
-COPY ${source:-obj/Docker/publish} .
-RUN apt-get update && apt-get install net-tools
-ENTRYPOINT ["dotnet", "PeopleService.dll"]
+COPY --from=build-env /app/out .
+COPY entrypoint.sh .
+ENTRYPOINT ["sh", "entrypoint.sh"]
